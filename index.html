@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>收合視窗與成績輸入</title>
+    <style>
+        a {
+          font-size: 24px; /* 設定字體大小 */
+        }
+        p {
+          font-size: 24px; /* 設定字體大小 */
+        }
+        h1 {
+          font-size: 50px;
+          color: blue;
+        }
+        h4 {
+          font-size: 50px;
+          color: black;
+        }
+        h3 {
+          font-size: 50px;
+          color: #FFD700;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            width: 900px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        /* 收合視窗樣式 */
+        .accordion {
+            justify-content: center;
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #fff;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .accordion-item {
+            border-bottom: 1px solid #ddd;
+        }
+        .accordion-header {
+            background: #4CAF50;
+            color: white;
+            padding: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .accordion-header:hover {
+            background: #45a049;
+        }
+        .accordion-content {
+            display: none;
+            padding: 5px;
+            background: #fff;
+            color: #333;
+            transition: max-height 0.3s ease-out;
+        }
+        .active + .accordion-content {
+            display: block;
+        }
+
+        .input-group {
+          display: flex;
+          justify-content: center; /* 關鍵：取消推開，改為向中間集結 */
+          align-items: center;
+          margin: 12px 0;          /* 增加一點行距比較美觀 */
+        }
+        
+        /* 2. 標籤：固定一個寬度，並讓文字靠右對齊冒號 */
+        .input-group label {
+          width: 100%;             /* 縮小標籤佔用的空間 */
+          text-align: center;       /* 文字靠右對齊，讓冒號排成直線 */
+          font-size: 24px;
+          margin-right: 15px;      /* 標籤與格子的緊密間距 */
+          flex: none;              /* 防止標籤被擠壓 */
+        }
+        
+
+        /* 輸入框樣式：強制設定寬度與高度 */
+        .input-group input[type="number"] {
+
+          font-size: 20px;
+          text-align: center;       /* 數字在格子內置中 */
+          border: 1px solid #ccc;
+          border-radius: 6px;       /* 稍微圓角，看起來比較現代 */
+          padding: 0 !important;    /* 清除內距防止撐大 */
+        }
+
+        .table-container {
+          display: flex;
+          flex-direction: column;
+          align-items: center; /* 垂直軸置中 */
+          width: 100%;
+          overflow-x: auto;
+        }
+        label {
+          flex: 1;
+          text-align: left;
+        }
+        textarea {
+          width: 100%;
+          height: 100%; /* 確保父層容器有固定高度 */
+          padding: 2px 0px;
+          
+          font-size: 15px;
+          font-family: inherit; /* 讓字體繼承，避免 textarea 預設字體不好看 */
+          padding-top: 15px;
+          
+          border: 1px solid #ccc;
+          border-radius: 4px;
+          text-align: center;
+          box-sizing: border-box;
+          
+          /* 關鍵屬性 */
+          resize: none;         /* 禁止手動調整大小 */
+          display: block;       /* 消除底部的微小間隙 */
+          overflow: auto;       /* 當文字超過高度時顯示捲軸 */
+        }
+        input[type="number"] {
+
+          width: 100%;      
+          height: 100%;
+          padding: 12px 8px; 
+            
+          font-size: 24px; 
+          /* 關鍵：加上 padding-left 讓文字在視覺上避開右側按鈕，達成真置中 */
+          padding-left: 20px;
+            
+          border: 1px solid #ccc;
+          border-radius: 4px;
+          text-align: center;
+          box-sizing: border-box; /* 確保增加 padding 不會撐破容器 */
+        }
+        input[type="submit"], .back-button {
+          width: 50%;
+          padding: 10px;
+          font-size: 20px;
+          font-weight: bold;
+          background-color: 	#4A4AFF;
+          color: white;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          margin-top: 30px;
+        }
+        button {
+
+        }
+        table {
+          width: 100%;        
+          table-layout: fixed;
+          border-collapse: collapse;
+          margin-top: 10px;
+          flex-shrink: 0; /* 防止表格被壓縮 */
+        }
+        th, td {
+          text-align: center;    /* 水平置中 */
+          ertical-align: middle; /* 垂直置中 */
+          font-size: 24px;
+          border: 1px solid #ccc;
+          padding: 1px 1px !important;
+          text-align: center;
+        }
+        th {
+          background-color: #f4f4f4;
+        }
+        #totalScore {
+          font-size: 18px;
+          font-weight: bold;
+          margin-top: 10px;
+        }
+        .hidden {
+          display: none;
+            
+        }
+
+
+    </style>
+  </head>
+
+
+  <body>
+    <div class="container">
+      <!-- ✅ 成績輸入畫面 -->
+      <div id="inputScreen">
+        <h1>學測成績轉換系統</h1>
+        <h2>轉科大分數<br>輸入成績</h2>
+
+        <form id="gradeForm">
+
+          <div  class="table-container">
+            <table id = "input_score">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>國文</th>
+                  <th>英文</th>
+                  <th>數學A</th>
+                  <th>數學B</th>
+                  <th>社會</th>
+                  <th>自然</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>原始級分</td>
+                  <td><input type="number" id="chinese" name="chinese" min="0" max="15" value=""></td>
+                  <td><input type="number" id="english" name="english" min="0" max="15" value=""></td>
+                  <td><input type="number" id="mathA"   name="mathA"   min="0" max="15" value=""></td>
+                  <td><input type="number" id="mathB"   name="mathB"   min="0" max="15" value=""></td>
+                  <td><input type="number" id="social"  name="social"  min="0" max="15" value=""></td>
+                  <td><input type="number" id="science" name="science" min="0" max="15" value=""></td>
+                </tr>
+
+                <tr>
+                  <td><textarea id="school_1" name="school_1"  placeholder="校系_1"></textarea></td>
+                  <td><input type="number" id="chineseWeight_1"  min="0" max="8" step="any" value=""></td>
+                  <td><input type="number" id="englishWeight_1"  min="0" max="8" step="any" value=""></td>
+                  <td><input type="number" id="mathAWeight_1"    min="0" max="8" step="any" value=""></td>
+                  <td><input type="number" id="mathBWeight_1"    min="0" max="8" step="any" value=""></td>
+                  <td><input type="number" id="scienceWeight_1"  min="0" max="8" step="any" value=""></td>
+                  <td><input type="number" id="socialWeight_1"   min="0" max="8" step="any" value=""></td>
+                </tr>
+                 
+                <tr>
+                  <td colspan="7"> 
+                    <input type="button" style="padding: 5px 5px; font-size: 20px;" value="新增校系" onclick="addFunction()"> 
+                    <input type="button" style="padding: 5px 5px; font-size: 20px;" value="刪除校系" onclick="deleteFunction()"> 
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+            
+        
+
+          <input type="submit" value="查詢">
+          
+          <br><br>
+          
+        </form>
+      </div>
+
+      <!-- ✅ 橫向成績表格 -->
+      <div id="resultScreen" class="hidden">
+        <h4>轉換結果</h4>
+        <table>
+          <thead>
+            <tr>
+              <th></th>
+              <th>國文</th>
+              <th>英文</th>
+              <th>數學A</th>
+              <th>數學B</th>
+              <th>自然</th>
+              <th>社會</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>原始級分</td>
+              <td id="chineseScore_0"></td>
+              <td id="englishScore_0"></td>
+              <td id="mathAScore_0"></td>
+              <td id="mathBScore_0"></td>
+              <td id="scienceScore_0"></td>
+              <td id="socialScore_0"></td>
+            </tr>
+          </tbody>
+        </table>
+        <br><br>
+        <label style="font-size: 25px;"> 換算公式:[加權分數/(權重總和*15)]*100 </label>
+        <br><br>
+
+        <table id = "showSchool">
+          <thead>
+            <tr>
+              <th>校系\加權</th>
+              <th>國文</th>
+              <th>英文</th>
+              <th>數學A</th>
+              <th>數學B</th>
+              <th>自然</th>
+              <th>社會</th>
+              <th>加權分數</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+            </tr>
+          </tbody>
+        </table>
+        <label></label><br> 
+        <button class="back-button" onclick="goBack()">重新查詢</button>
+        <h3>~~祝您金榜題名~~</h3>
+      </div>
+    </div> 
+  </body>
+
+
+    <script>
+      
+      // 取得輸入值
+      document.getElementById('gradeForm').addEventListener( 'submit', async function(e) 
+      {
+        e.preventDefault(); 
+
+        // 取得輸入值
+        var score_0 = [Number(document.getElementById('chinese').value || 0),
+                       Number(document.getElementById('english').value || 0),
+                       Number(document.getElementById('mathA').value   || 0),
+                       Number(document.getElementById('mathB').value   || 0),
+                       Number(document.getElementById('science').value || 0),
+                       Number(document.getElementById('social').value  || 0)];
+                       
+        // 更新原始學測 
+        document.getElementById('chineseScore_0').textContent = score_0[0];
+        document.getElementById('englishScore_0').textContent = score_0[1];
+        document.getElementById('mathAScore_0').textContent = score_0[2];
+        document.getElementById('mathBScore_0').textContent = score_0[3];
+        document.getElementById('scienceScore_0').textContent = score_0[4];
+        document.getElementById('socialScore_0').textContent = score_0[5];
+
+        let table = document.getElementById('input_score');
+        let table_row = table.rows.length;
+        let num = table_row - 3;
+
+        for(let i = 1 ; i <= num ; i++) {
+          let point  =  [Number(document.getElementById(`chineseWeight_${i}`).value || 0),
+                         Number(document.getElementById(`englishWeight_${i}`).value || 0),
+                         Number(document.getElementById(`mathAWeight_${i}`).value   || 0),
+                         Number(document.getElementById(`mathBWeight_${i}`).value   || 0),
+                         Number(document.getElementById(`scienceWeight_${i}`).value || 0),
+                         Number(document.getElementById(`socialWeight_${i}`).value  || 0),
+                         document.getElementById(`school_${i}`).value || `校系_${i}`];
+
+          let totalscore=0;
+          let totalpoint=0;
+          let endscore=0;
+          for(let j = 0 ; j < 6 ; j++){
+            totalscore += score_0[j] * point[j];
+            totalpoint += 15 * point[j];
+          }
+          endscore = (totalscore / totalpoint * 100 ? totalscore / totalpoint * 100 : 0 ) ;
+          endscore = endscore.toFixed(2);
+
+          let table = document.getElementById("showSchool");
+          let table_row = table.rows.length;
+
+
+          let newRow = table.insertRow();
+          newRow.innerHTML = `
+              <td style="font-size: 15px;">${point[6]}</td>
+              <td>${point[0]}</td>
+              <td>${point[1]}</td>
+              <td>${point[2]}</td>
+              <td>${point[3]}</td>
+              <td>${point[4]}</td>
+              <td>${point[5]}</td>
+              <td>${endscore}</td>
+          `;
+        }
+
+        // 切換畫面
+        document.getElementById('inputScreen').classList.add('hidden');
+        document.getElementById('resultScreen').classList.remove('hidden');
+      });
+
+      function addFunction() {
+        let table = document.getElementById('input_score');
+        let table_row = table.rows.length;
+        let add_num = table.rows.length - 2;
+
+        let newRow = table.insertRow(add_num + 1);
+        
+        newRow.innerHTML = `
+            <td><textarea id="school_${add_num}" name="school_${add_num}" placeholder="校系_${add_num}"></textarea></td>
+            <td><input type="number" id="chineseWeight_${add_num}" min="0" max="8" step="any"></td>
+            <td><input type="number" id="englishWeight_${add_num}" min="0" max="8" step="any"></td>
+            <td><input type="number" id="mathAWeight_${add_num}" min="0" max="8" step="any"></td>
+            <td><input type="number" id="mathBWeight_${add_num}" min="0" max="8" step="any"></td>
+            <td><input type="number" id="scienceWeight_${add_num}" min="0" max="8" step="any"></td>
+            <td><input type="number" id="socialWeight_${add_num}" min="0" max="8" step="any"></td>
+        `;
+      }
+
+      function deleteFunction() {
+        let table = document.getElementById('input_score');
+        let table_row = table.rows.length;
+        let delete_num = table_row -2;
+
+        if (delete_num > 2)
+          table.deleteRow(delete_num);       
+
+      }
+
+      function goBack() {
+        let table = document.getElementById('showSchool');
+        let table_row = table.rows.length;
+        for (let i = 0 ; i < table_row - 1 ; i ++) {
+          table.deleteRow( -1 );
+        }
+
+        document.getElementById('resultScreen').classList.add('hidden');
+        document.getElementById('inputScreen').classList.remove('hidden');
+      }
+
+    </script>
+  </body>
+</html>
