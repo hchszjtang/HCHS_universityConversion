@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>收合視窗與成績輸入</title>
+    <title>高雄市立新莊高中科大級分轉換</title>
     <style>
         a {
           font-size: 24px; /* 設定字體大小 */
@@ -114,7 +114,7 @@
           height: 100%; /* 確保父層容器有固定高度 */
           padding: 2px 0px;
           
-          font-size: 15px;
+          font-size: 18px;
           font-family: inherit; /* 讓字體繼承，避免 textarea 預設字體不好看 */
           padding-top: 15px;
           
@@ -132,7 +132,7 @@
 
           width: 100%;      
           height: 100%;
-          padding: 12px 8px; 
+          padding: 16px 8px; 
             
           font-size: 24px; 
           /* 關鍵：加上 padding-left 讓文字在視覺上避開右側按鈕，達成真置中 */
@@ -156,7 +156,7 @@
           margin-top: 30px;
         }
         button {
-
+          font-size: 20px;
         }
         table {
           width: 100%;        
@@ -186,6 +186,24 @@
             
         }
 
+        @media print {
+          @page {
+            margin: 1cm !important;
+          }
+          .no-print {
+            display: none !important;
+          }
+          #showSchool {
+            transform: scale(0.9);
+            left : -1cm;
+  
+          }
+          #showoriginal {
+            transform: scale(0.9);
+            
+          }
+      }
+
 
     </style>
   </head>
@@ -195,8 +213,8 @@
     <div class="container">
       <!-- ✅ 成績輸入畫面 -->
       <div id="inputScreen">
-        <h1>學測成績轉換系統</h1>
-        <h2>轉科大分數<br>輸入成績</h2>
+        <h1>高雄市立新莊高中<br>學測成績轉換系統</h1>
+        <h2>科大分數轉換</h2>
 
         <form id="gradeForm">
 
@@ -225,7 +243,7 @@
                 </tr>
 
                 <tr>
-                  <td><textarea id="school_1" name="school_1"  placeholder="校系_1"></textarea></td>
+                  <td ><textarea id="school_1" name="school_1"  placeholder="校系_1"></textarea></td>
                   <td><input type="number" id="chineseWeight_1"  min="0" max="8" step="any" value=""></td>
                   <td><input type="number" id="englishWeight_1"  min="0" max="8" step="any" value=""></td>
                   <td><input type="number" id="mathAWeight_1"    min="0" max="8" step="any" value=""></td>
@@ -255,8 +273,9 @@
 
       <!-- ✅ 橫向成績表格 -->
       <div id="resultScreen" class="hidden">
-        <h4>轉換結果</h4>
-        <table>
+        
+        <h4>科大轉換結果</h4>
+        <table id = "showoriginal"> 
           <thead>
             <tr>
               <th></th>
@@ -303,8 +322,12 @@
           </tbody>
         </table>
         <label></label><br> 
-        <button class="back-button" onclick="goBack()">重新查詢</button>
-        <h3>~~祝您金榜題名~~</h3>
+        <div class="no-print">
+          <button style="font-size: 20px;" onclick="window.print()">列印表格</button>
+        </div>
+
+        <button class="back-button no-print" onclick="goBack()">重新查詢</button>
+        
       </div>
     </div> 
   </body>
@@ -362,7 +385,7 @@
 
           let newRow = table.insertRow();
           newRow.innerHTML = `
-              <td style="font-size: 15px;">${point[6]}</td>
+              <td style="font-size: 18px;">${point[6]}</td>
               <td>${point[0]}</td>
               <td>${point[1]}</td>
               <td>${point[2]}</td>
